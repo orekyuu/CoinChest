@@ -1,0 +1,2 @@
+CREATE DATABASE coin_chest_development;
+CREATE DATABASE coin_chest_test;

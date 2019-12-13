@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/coin_chest_test?rewriteBatchedStatements=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
+doma:
+  dialect: mysql
+  naming: snake_lower_case
+
+logging.level.org.springframework.jdbc.core: TRACE

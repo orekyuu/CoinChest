@@ -1,0 +1,5 @@
+rootProject.name = 'coin-chest'
+
+include 'document',
+        'web',
+        'point'

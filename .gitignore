@@ -1,0 +1,8 @@
+build
+out
+.idea
+.gradle
+*.log
+
+infra/mysql/db
+infra/mysql/log

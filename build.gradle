@@ -1,0 +1,102 @@
+plugins {
+    id "org.asciidoctor.convert" version "2.4.0" apply false
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.3.61'
+    id 'org.jetbrains.kotlin.plugin.allopen' version '1.3.61'
+}
+
+allprojects {
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'org.jetbrains.kotlin.plugin.spring'
+    apply plugin: 'org.jetbrains.kotlin.kapt'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+
+    group 'net.orekyuu'
+    version '1.0-SNAPSHOT'
+
+    bootJar.enabled = false
+    jar.enabled = true
+
+    repositories {
+        jcenter()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    dependencies {
+        implementation 'org.jetbrains.kotlin:kotlin-reflect'
+        implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
+
+project("document") {
+    apply plugin: 'org.asciidoctor.convert'
+
+    asciidoctor {
+        sourceDir = file('docs')
+        sources {
+            include 'index.adoc'
+        }
+        outputDir = file('build/docs')
+    }
+}
+
+project("web") {
+    bootJar.enabled = true
+    dependencies {
+        implementation project(":point")
+
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.2.1'
+        implementation('org.seasar.doma:doma:2.25.1')
+        kapt('org.seasar.doma:doma:2.25.1')
+
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:+")
+
+        runtimeOnly 'mysql:mysql-connector-java'
+        implementation 'org.flywaydb:flyway-core'
+    }
+
+    kapt {
+        arguments {
+            arg("doma.resources.dir", compileKotlin.destinationDir)
+            def converters = [
+                    'net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter,net.orekyuu.coinchest.infrastructure.doma.converter.LongDomainConverter',
+                    'net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter,net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter',
+                    'net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter,net.orekyuu.coinchest.infrastructure.doma.converter.BigIntegerConverter',
+                    'net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter,net.orekyuu.coinchest.infrastructure.doma.converter.BigDecimalConverter',
+                    'net.orekyuu.coinchest.infrastructure.doma.converter.StringDomainConverter,net.orekyuu.coinchest.infrastructure.doma.converter.LocalDateTimeConverter',
+            ]
+
+            arg("doma.domain.converters", converters.join(","))
+        }
+    }
+
+    task copyDomaResources(type: Sync) {
+        from sourceSets.main.resources.srcDirs
+        into compileKotlin.destinationDir
+        include 'doma.compile.config'
+        include 'META-INF/**/*.sql'
+        include 'META-INF/**/*.script'
+    }
+
+    compileKotlin {
+        dependsOn copyDomaResources
+        kotlinOptions.jvmTarget = '12'
+    }
+
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = '12'
+    }
+
+    allOpen {
+        annotation("org.seasar.doma.Entity")
+    }
+}

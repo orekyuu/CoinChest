@@ -1,0 +1,5 @@
+= CoinChestドキュメント
+
+CoinChest利用者向けのドキュメントです
+
+include::management-api.adoc[]
