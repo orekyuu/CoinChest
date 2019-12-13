@@ -8,7 +8,7 @@ jobs:
     services:
       mysql:
         image: mysql:8
-        ports: ['3306:3306']
+        ports: ['3336:3306']
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: coin_chest_test
@@ -20,4 +20,4 @@ jobs:
     - name: Run a one-line script
       run: ./gradlew test
       env:
-        SPRING_DATASOURCE_URL: 'jdbc:mysql://localhost:3306/coin_chest_test?rewriteBatchedStatements=true'
+        SPRING_DATASOURCE_URL: 'jdbc:mysql://localhost:3336/coin_chest_test?rewriteBatchedStatements=true'
