@@ -107,5 +107,41 @@ class MonthlyAccountantDaoTest {
                     LocalDate.of(2020, 1, 1))
             assertThat(result).hasSize(2)
         }
+
+        @Test
+        @ImportJsonData("accountant/複数の月に取引がある")
+        fun monthlyTest() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+            assertThat(result).hasSize(2)
+
+            val chargePointAmount = result.find { it.tenantId == TenantId("tenant_a") }!!.chargePointAmount
+            assertThat(chargePointAmount).isEqualTo(ChargePointAmount(PointAmount(3000)))
+        }
+
+        @Test
+        @ImportJsonData("accountant/同じ月にチャージと利用")
+        fun chargeAndConsume() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+            assertThat(result).hasSize(1)
+
+            val chargePointAmount = result.find { it.tenantId == TenantId("tenant_a") }!!.chargePointAmount
+            assertThat(chargePointAmount).isEqualTo(ChargePointAmount(PointAmount(4000)))
+        }
+
+        @Test
+        @ImportJsonData("accountant/複数の月に取引がある")
+        fun multipleMonthlyTransactions() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+            assertThat(result).hasSize(2)
+
+            val chargePointAmount = result.find { it.tenantId == TenantId("tenant_a") }!!.chargePointAmount
+            assertThat(chargePointAmount).isEqualTo(ChargePointAmount(PointAmount(3000)))
+        }
     }
 }

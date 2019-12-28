@@ -9,7 +9,6 @@ import net.orekyuu.coinchest.point.PointAmount
 import net.orekyuu.coinchest.point.UsageCategoryId
 import net.orekyuu.coinchest.point.transaction.ConsumePointAmount
 import net.orekyuu.coinchest.point.transaction.ConsumeTransactionId
-import net.orekyuu.coinchest.point.transaction.CurrencyType
 import net.orekyuu.coinchest.tenant.TenantId
 import net.orekyuu.coinchest.time.SystemTimeSpan
 import net.orekyuu.coinchest.time.UserTimeSpan
@@ -43,7 +42,6 @@ class ConsumedPointDaoTest: DaoTestBase() {
         consumedPointDao.insert(ConsumedPointEntity(
                 transactionId,
                 TenantId("tenant"),
-                CurrencyType.PC,
                 UsageCategoryId("service"),
                 accountEntity.accountId,
                 ConsumePointAmount(PointAmount(1000)),
