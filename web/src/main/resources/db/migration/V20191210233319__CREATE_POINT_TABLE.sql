@@ -26,7 +26,6 @@ create table consumed_points
 (
     consume_transaction_id varchar(128) not null comment '取引ID',
     tenant_id varchar(128) not null comment 'テナント',
-    currency_type varchar(128) not null comment '通貨タイプ',
     usage_category varchar(128) not null comment '消費区分',
     account_id int not null comment 'アカウントID',
     consumed_amount int not null comment '消費ポイント量',
