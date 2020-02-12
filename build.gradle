@@ -55,7 +55,7 @@ project("web") {
 
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.2.1'
-        implementation('org.seasar.doma:doma:2.26.0')
+        implementation('org.seasar.doma:doma:2.27.1')
         kapt('org.seasar.doma:doma:2.26.0')
 
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:+")
