@@ -1,0 +1,109 @@
+[
+  {
+    "table": "tenants",
+    "records": [
+      {
+        "tenant_id": "tenant_a",
+        "tenant_name": "テナントA",
+        "api_key": "tenant_a_api_key"
+      }
+    ]
+  },
+  {
+    "table": "accounts",
+    "records": [
+      {
+        "account_id": 1,
+        "display_name": "user_a"
+      }
+    ]
+  },
+  {
+    "table": "point_transactions",
+    "records": [
+      {
+        "transaction_id": "transaction1"
+      },
+      {
+        "transaction_id": "transaction2"
+      },
+      {
+        "transaction_id": "transaction3"
+      }
+    ]
+  },
+  {
+    "table": "produced_points",
+    "records": [
+      {
+        "produced_transaction_id": "transaction1",
+        "tenant_id": "tenant_a",
+        "currency_type": "PC",
+        "account_id": 1,
+        "produced_amount": 1000,
+        "point_unit": 1,
+        "system_in": "2019-12-01 00:00:00",
+        "system_out": "9999-12-31 23:59:59",
+        "user_in": "2019-12-01 00:00:00",
+        "user_out": "9999-12-31 23:59:59"
+      },
+      {
+        "produced_transaction_id": "transaction2",
+        "tenant_id": "tenant_a",
+        "currency_type": "IOS",
+        "account_id": 1,
+        "produced_amount": 2000,
+        "point_unit": 1,
+        "system_in": "2019-12-01 00:00:00",
+        "system_out": "9999-12-31 23:59:59",
+        "user_in": "2019-12-01 00:00:00",
+        "user_out": "9999-12-31 23:59:59"
+      }
+    ]
+  },
+  {
+    "table": "consumed_points",
+    "records": [
+      {
+        "consume_transaction_id": "transaction3",
+        "tenant_id": "tenant_a",
+        "usage_category": "ec_shop",
+        "account_id": 1,
+        "consumed_amount": 1800,
+        "system_in": "2019-12-01 00:00:00",
+        "system_out": "9999-12-31 23:59:59",
+        "user_in": "2019-12-01 00:00:00",
+        "user_out": "9999-12-31 23:59:59"
+      }
+    ]
+  },
+  {
+    "table": "used_points",
+    "records": [
+      {
+        "produced_transaction_id": "transaction1",
+        "consumed_transaction_id": "transaction3",
+        "tenant_id": "tenant_a",
+        "currency_type": "PC",
+        "account_id": 1,
+        "amount": 1000,
+        "system_in": "2019-12-01 00:00:00",
+        "system_out": "9999-12-31 23:59:59",
+        "user_in": "2019-12-01 00:00:00",
+        "user_out": "9999-12-31 23:59:59"
+      },
+      {
+        "produced_transaction_id": "transaction2",
+        "consumed_transaction_id": "transaction3",
+        "tenant_id": "tenant_a",
+        "currency_type": "IOS",
+        "account_id": 1,
+        "amount": 800,
+        "system_in": "2019-12-01 00:00:00",
+        "system_out": "9999-12-31 23:59:59",
+        "user_in": "2019-12-01 00:00:00",
+        "user_out": "9999-12-31 23:59:59"
+      }
+    ]
+  }
+]

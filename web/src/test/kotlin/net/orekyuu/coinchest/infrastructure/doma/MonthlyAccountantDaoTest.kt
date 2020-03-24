@@ -3,11 +3,15 @@ package net.orekyuu.coinchest.infrastructure.doma
 import net.orekyuu.coinchest.extensions.junit.database.ImportJsonData
 import net.orekyuu.coinchest.infrastructure.doma.dao.MonthlyAccountantDao
 import net.orekyuu.coinchest.infrastructure.doma.entity.MonthlyProducedPointAccountantEntity
+import net.orekyuu.coinchest.infrastructure.doma.entity.MonthlyUsedPointAccountantEntity
 import net.orekyuu.coinchest.point.PointAmount
+import net.orekyuu.coinchest.point.UsageCategoryId
 import net.orekyuu.coinchest.point.transaction.ChargePointAmount
+import net.orekyuu.coinchest.point.transaction.ConsumePointAmount
 import net.orekyuu.coinchest.point.transaction.CurrencyType
 import net.orekyuu.coinchest.tenant.TenantId
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -142,6 +146,82 @@ class MonthlyAccountantDaoTest {
 
             val chargePointAmount = result.find { it.tenantId == TenantId("tenant_a") }!!.chargePointAmount
             assertThat(chargePointAmount).isEqualTo(ChargePointAmount(PointAmount(3000)))
+        }
+    }
+
+    @Nested
+    @SpringBootTest
+    inner class UseAccountantByYearMonth : DaoTestBase() {
+        fun testQuery(targetMonth: YearMonth, aggregateDate: LocalDate): List<MonthlyUsedPointAccountantEntity> {
+            val aggregateTime = aggregateDate.atStartOfDay()
+            return accountantDao.queryMonthlyUseAccountantByYearMonth(targetMonth, aggregateTime)
+        }
+
+        @Test
+        @DisplayName("ポイント付与はあるがポイントを利用していないので結果は空")
+        @ImportJsonData("accountant/used_ポイント付与1件_消費なし")
+        fun nonUsed() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+
+            assertThat(result).isEmpty()
+        }
+
+        @Test
+        @DisplayName("ポイント付与１件、消費１件の場合は結果が１件")
+        @ImportJsonData("accountant/used_ポイント付与1件_消費1件")
+        fun simpleUsed() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+
+            assertThat(result).hasSize(1).first().extracting {
+                assertThat(it.tenantId).isEqualTo(TenantId("tenant_a"))
+                assertThat(it.currencyType).isEqualTo(CurrencyType.PC)
+                assertThat(it.usageCategory).isEqualTo(UsageCategoryId("ec_shop"))
+                assertThat(it.consumedAmount).isEqualTo(ConsumePointAmount(PointAmount(1800)))
+            }
+        }
+
+        @Test
+        @DisplayName("ポイント付与1件に消費2件で同じ通貨とテナントと利用用途なら合算される")
+        @ImportJsonData("accountant/used_ポイント付与1件_消費2件")
+        fun simpleUsed2() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+
+            assertThat(result).hasSize(1).first().extracting {
+                assertThat(it.tenantId).isEqualTo(TenantId("tenant_a"))
+                assertThat(it.currencyType).isEqualTo(CurrencyType.PC)
+                assertThat(it.usageCategory).isEqualTo(UsageCategoryId("ec_shop"))
+                assertThat(it.consumedAmount).isEqualTo(ConsumePointAmount(PointAmount(2100)))
+            }
+        }
+
+        @Test
+        @DisplayName("ポイント付与2件に消費1件が紐づく場合、通貨・テナントごとにグルーピングされる")
+        @ImportJsonData("accountant/used_ポイント付与2件を跨って消費")
+        fun multiUsed() {
+            val result = testQuery(
+                    YearMonth.of(2019, 12),
+                    LocalDate.of(2020, 1, 1))
+
+            assertThat(result).hasSize(2)
+            assertThat(result.find { it.currencyType == CurrencyType.PC }!!).extracting {
+                assertThat(it.tenantId).isEqualTo(TenantId("tenant_a"))
+                assertThat(it.currencyType).isEqualTo(CurrencyType.PC)
+                assertThat(it.usageCategory).isEqualTo(UsageCategoryId("ec_shop"))
+                assertThat(it.consumedAmount).isEqualTo(ConsumePointAmount(PointAmount(1000)))
+            }
+
+            assertThat(result.find { it.currencyType == CurrencyType.IOS }!!).extracting {
+                assertThat(it.tenantId).isEqualTo(TenantId("tenant_a"))
+                assertThat(it.currencyType).isEqualTo(CurrencyType.IOS)
+                assertThat(it.usageCategory).isEqualTo(UsageCategoryId("ec_shop"))
+                assertThat(it.consumedAmount).isEqualTo(ConsumePointAmount(PointAmount(800)))
+            }
         }
     }
 }
