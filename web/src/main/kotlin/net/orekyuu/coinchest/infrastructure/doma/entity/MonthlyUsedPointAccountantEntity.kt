@@ -8,10 +8,10 @@ import net.orekyuu.coinchest.tenant.TenantId
 import org.seasar.doma.Entity
 
 @Entity(immutable = true)
-data class MonthlyConsumedPointAccountantEntity(
+data class MonthlyUsedPointAccountantEntity(
         val tenantId: TenantId,
         val currencyType: CurrencyType,
-        val usageCategoryId: UsageCategoryId,
+        val usageCategory: UsageCategoryId,
         val consumedAmount: ConsumePointAmount
 )
 
